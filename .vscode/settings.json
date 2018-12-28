@@ -1,0 +1,5 @@
+{
+    "python.linting.pylintEnabled": true,
+    "python.pythonPath": "/Users/1001078/Documents/workspace/Python/toyvenv/bin/python",
+    "python.linting.enabled": true
+}
