@@ -1,4 +1,3 @@
-import sys
 import datetime, re
 import requests
 from bs4 import BeautifulSoup
@@ -54,86 +53,6 @@ selectorDictList = [
 nameSelector = "#div_content > div.board_head > div.board_name > h2 > a"
 
 
-# LoginData Sample
-"""
-    {
-        'nameAttr_of_inputTag': 'value',
-        'nameAttr_of_inputTag': 'value',
-    },
-"""
-def _bs4Login(loginActionUrl, loginData):
-    session = requests.Session()
-    req = session.post(loginActionUrl, data=loginData)
-    if req.status_code == 200:
-        return session
-    else :
-        raise Exception("로그인 실패")
-
-
-def _selLogin(loginUrl, idXpath, id, pwdXpath, pwd, submitXpath):
-    # driver = webdriver.Chrome('chromedriver_mac')
-    driver = webdriver.Chrome(CHROME_DRIVER)
-    driver.implicitly_wait(3)
-
-    driver.get(loginUrl)
-    driver.find_element_by_xpath(idXpath).send_keys(id)
-    driver.find_element_by_xpath(pwdXpath).send_keys(pwd)
-    driver.find_element_by_xpath(submitXpath).click()
-
-    return driver
-
-
-
-# selectorDictList Sample
-"""
-    {
-        'index': 'index1',
-        'selector' : "#div_content > div > div.list_title > a.list_subject > span.subject_fixed",
-        'startAt': 0,
-        'attr' : 'data-role',
-        'limit' : 0,
-    },
-"""
-async def bs4SinglePage(url, selectorDictList, nameSelector=None, nameAttr='text', loginSession=None):
-    await sem.acquire()
-
-    if loginSession is None :
-        s = requests.Session()
-    else :
-        s = loginSession
-
-    req = await loop.run_in_executor(None, s.get, url)
-    # req = s.get(url)    
-    
-    status = req.status_code
-    header = req.headers
-    html = req.text
-
-    sem.release()
-
-    return _parseHtml(html, selectorDictList, nameSelector=nameSelector, nameAttr=nameAttr)
-
-    
-        
-async def bs4GetNestedPage(url, selector, startAt = 0, limit = -1, loginSession=None):
-    selectorDictList = [
-        {
-            'selector' : selector,
-            'startAt': 1,
-            'attr' : 'href',
-            'startAt': startAt,
-            'limit': limit
-        },
-    ]
-    future = bs4SinglePage(url, selectorDictList, loginSession=loginSession)
-    rawData = await asyncio.gather(future)
-    
-    result = rawData[0]
-
-    # fullpath generation
-    links = result[selectorDictList[0].get('index', 'unknown')]    
-    return _getFullPath(url, links)
-    
 
 def _getFullPath(url, links):
     for idx, link in enumerate(links) :
@@ -149,72 +68,6 @@ def _getFullPath(url, links):
             links[idx] = "/".join(url.split("/")[0:-1]) + link
 
     return links
-
-
-async def selSinglePage(url, selectorDictList, nameSelector=None, nameAttr='text', driver=None, waitingForXpath=None, delay=3):
-    await sem.acquire()
-
-    if driver is None :   
-        driver = webdriver.Chrome(CHROME_DRIVER)
-        driver.implicitly_wait(3)
-
-    driver.get(url)
-    
-
-    if waitingForXpath is not None:
-        try:
-            state = EC.presence_of_element_located((By.XPATH, waitingForXpath))
-            WebDriverWait(driver, delay).until(state)
-            print("Document is ready")
-        except TimeoutException:
-            print("Time out")
-
-    html = driver.page_source
-
-    result = _parseHtml(html, selectorDictList, nameSelector=nameSelector, nameAttr=nameAttr)
-
-    sem.release()
-    driver.close()
-
-    return result
-
-
-async def selNestedPage(url, selector, startAt=0, limit=-1, driver=None, waitingForXpath=None, delay=3):
-    await sem.acquire()
-
-    selectorDictList = [
-        {
-            'selector' : selector,
-            'startAt': 1,
-            'attr' : 'href',
-            'startAt': startAt,
-            'limit': limit
-        },
-    ]
-
-    if driver is None :   
-        driver = webdriver.Chrome(CHROME_DRIVER)
-        driver.implicitly_wait(3)
-
-    driver.get(url)
-    
-    if waitingForXpath is not None:
-        try:
-            state = EC.presence_of_element_located((By.XPATH, waitingForXpath))
-            WebDriverWait(driver, delay).until(state)
-            print("Document is ready")
-        except TimeoutException:
-            print("Time out")
-
-    html = driver.page_source
-
-    result = _parseHtml(html, selectorDictList)
-
-    sem.release()
-    driver.close()
-    
-    links = result[selectorDictList[0].get('index', 'unknown')]    
-    return _getFullPath(url, links)
 
 def _parseHtml(html, selectorDictList, nameSelector=None, nameAttr='text'):
     soup = BeautifulSoup(html, 'html.parser')
@@ -258,10 +111,6 @@ def urlParse(url, variable, values):
         results.append(url.replace(variable, str(value)))
     return results
 
-
-
-
-
 def toFile(data, filename, filetype='csv'):
     ## Todo 
     # Dict => Dataframe
@@ -274,6 +123,154 @@ def toFile(data, filename, filetype='csv'):
         data.to_html(filename, index=False)
 
 
+# LoginData Sample
+"""
+    {
+        'nameAttr_of_inputTag': 'value',
+        'nameAttr_of_inputTag': 'value',
+    },
+"""
+def bs4Login(loginActionUrl, loginData):
+    session = requests.Session()
+    req = session.post(loginActionUrl, data=loginData)
+    if req.status_code == 200:
+        return session
+    else :
+        raise Exception("로그인 실패")
+
+
+def selLogin(loginUrl, idXpath, id, pwdXpath, pwd, submitXpath):
+    # driver = webdriver.Chrome('chromedriver_mac')
+    driver = webdriver.Chrome(CHROME_DRIVER)
+    driver.implicitly_wait(3)
+
+    driver.get(loginUrl)
+    driver.find_element_by_xpath(idXpath).send_keys(id)
+    driver.find_element_by_xpath(pwdXpath).send_keys(pwd)
+    driver.find_element_by_xpath(submitXpath).click()
+
+    return driver
+
+
+async def bs4GetNestedPage(url, selector, startAt = 0, limit = -1, loginSession=None):
+    selectorDictList = [
+        {
+            'selector' : selector,
+            'startAt': 1,
+            'attr' : 'href',
+            'startAt': startAt,
+            'limit': limit
+        },
+    ]
+    future = bs4SinglePage(url, selectorDictList, loginSession=loginSession)
+    rawData = await asyncio.gather(future)
+    
+    result = rawData[0]
+
+    # fullpath generation
+    links = result[selectorDictList[0].get('index', 'unknown')]    
+    return _getFullPath(url, links)
+
+
+async def selNestedPage(url, selector, startAt=0, limit=-1, driver=None, waitingForXpath=None, delay=3):
+    await sem.acquire()
+
+    selectorDictList = [
+        {
+            'selector' : selector,
+            'startAt': 1,
+            'attr' : 'href',
+            'startAt': startAt,
+            'limit': limit
+        },
+    ]
+
+    if driver is None :   
+        driver = webdriver.Chrome(CHROME_DRIVER)
+        driver.implicitly_wait(3)
+
+    driver.get(url)
+    
+    if waitingForXpath is not None:
+        try:
+            state = EC.presence_of_element_located((By.XPATH, waitingForXpath))
+            WebDriverWait(driver, delay).until(state)
+            print("Document is ready")
+        except TimeoutException:
+            print("Time out")
+
+    html = driver.page_source
+
+    result = _parseHtml(html, selectorDictList)
+
+    sem.release()
+    driver.close()
+    
+    links = result[selectorDictList[0].get('index', 'unknown')]    
+    return _getFullPath(url, links)
+
+
+
+# selectorDictList Sample
+"""
+    {
+        'index': 'index1',
+        'selector' : "#div_content > div > div.list_title > a.list_subject > span.subject_fixed",
+        'startAt': 0,
+        'attr' : 'data-role',
+        'limit' : 0,
+    },
+"""
+async def bs4SinglePage(url, selectorDictList, nameSelector=None, nameAttr='text', loginSession=None):
+    await sem.acquire()
+
+    if loginSession is None :
+        s = requests.Session()
+    else :
+        s = loginSession
+
+    req = await loop.run_in_executor(None, s.get, url)
+    # req = s.get(url)    
+    
+    status = req.status_code
+    header = req.headers
+    html = req.text
+
+    sem.release()
+
+    return _parseHtml(html, selectorDictList, nameSelector=nameSelector, nameAttr=nameAttr)
+
+
+
+async def selSinglePage(url, selectorDictList, nameSelector=None, nameAttr='text', driver=None, waitingForXpath=None, delay=3):
+    await sem.acquire()
+
+    if driver is None :   
+        driver = webdriver.Chrome(CHROME_DRIVER)
+        driver.implicitly_wait(3)
+
+    driver.get(url)
+    
+
+    if waitingForXpath is not None:
+        try:
+            state = EC.presence_of_element_located((By.XPATH, waitingForXpath))
+            WebDriverWait(driver, delay).until(state)
+            print("Document is ready")
+            driver.scroll
+        except TimeoutException:
+            print("Time out")
+
+    html = driver.page_source
+
+    result = _parseHtml(html, selectorDictList, nameSelector=nameSelector, nameAttr=nameAttr)
+
+    sem.release()
+    driver.close()
+
+    return result
+    
+ 
 
 
 
@@ -336,24 +333,25 @@ if __name__ == "__main__":
 
     ### SELENIUM Login wiki Test
     loginUrl = "http://wiki.skplanet.com/login.action?os_destination=%2Findex.action&permissionViolation=true"
-    driver = _selLogin(loginUrl, '//*[@id="os_username"]', '1001078', '//*[@id="os_password"]', 'jjhok6757!', '//*[@id="loginButton"]')
+    driver = selLogin(loginUrl, '//*[@id="os_username"]', '********', '//*[@id="os_password"]', '********', '//*[@id="loginButton"]')
 
     url = "http://wiki.skplanet.com/admin/originaltheme/organizer.action"
-    # selectorDictList = [
-    #     {
-    #         'index': 'Space 이름',
-    #         'selector': '#rw_uncategorized_container > div > div.rw_item_body > ul > li > span.rw_item_content',
-    #     },
-    #     {
-    #         'index': 'UNCATEGORIZED',
-    #         'selector': '#rw_uncategorized_container > div > div.rw_item_body > ul > li > span.rw_item_content > span.rw_actions > a',
-    #         'attr': 'href'
-    #     }
-    # ]
-    result = loop.run_until_complete(selNestedPage(url, selector='#rw_uncategorized_container > div > div.rw_item_body > ul > li > span.rw_item_content > span.rw_actions > a', driver=driver, waitingForXpath='//*[@id="rw_uncategorized_container"]/div/div'))
-    # result = loop.run_until_complete(selSinglePage(url, selectorDictList=selectorDictList, driver=driver, waitingForXpath='//*[@id="rw_uncategorized_container"]/div/div'))
+    selectorDictList = [
+        {
+            'index': 'Space 이름',
+            'selector': '#rw_uncategorized_container > div > div.rw_item_body > ul > li > span.rw_item_content',
+        },
+        {
+            'index': 'UNCATEGORIZED',
+            'selector': '#rw_uncategorized_container > div > div.rw_item_body > ul > li > span.rw_item_content > span.rw_actions > a',
+            'attr': 'href'
+        }
+    ]
+    # result = loop.run_until_complete(selNestedPage(url, selector='#rw_uncategorized_container > div > div.rw_item_body > ul > li > span.rw_item_content > span.rw_actions > a', driver=driver, waitingForXpath='//*[@id="rw_uncategorized_container"]/div/div'))
+    result = loop.run_until_complete(selSinglePage(url, selectorDictList=selectorDictList, driver=driver, waitingForXpath='//*[@id="rw_uncategorized_container"]/div/div'))
     df = pd.DataFrame(result)
     print(df)
+    toFile(df, 'wiki.csv')
 
     loop.close()
 
