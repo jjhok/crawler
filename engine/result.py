@@ -116,3 +116,55 @@
 #     return resultStrList
 
 
+## 5-4 
+# def solution(A, B, K):
+#     import math
+#     first = math.ceil(A/K) * K
+#     last = math.floor(B/K) * K
+#     innerCount = (last - first) / K - 1
+
+#     return int(innerCount + 2)
+
+
+## 6-1
+# def solution(A):
+#     return len(set(A))
+
+# # 6-2
+# def solution(A):
+#     A.sort()
+#     minusMax = A[0] * A[1]
+#     A.reverse()
+#     plusMax = A[0] * A[1] * A[2]
+#     return max([minusMax * A[0], plusMax])
+
+# # 6-3
+# def solution(A):
+#     A.sort()
+#     filtered = list(filter(lambda x: x>0, A))
+#     for index in range(0, len(filtered)-2):
+#         if filtered[index] + filtered[index+1] > filtered[index+2]:
+#             return 1  
+#     return 0
+
+# 6-4: 50% 성능포기
+# def solution(A):
+#     leftPoints = []
+#     rightPoints = []
+#     for index, value in enumerate(A):
+#         leftPoints.append(index - value)
+#         rightPoints.append(index + value)
+    
+#     leftSideOutCount = 0
+#     rightSideOutCount = 0
+#     for index in range(0, len(A)):
+#         leftSideOutCount += len(list(filter(lambda x: x < leftPoints[index], rightPoints[index+1:])))
+#         rightSideOutCount += len(list(filter(lambda x: x > rightPoints[index], leftPoints[index+1:])))
+
+#     return totalChance(len(A)) - leftSideOutCount - rightSideOutCount
+
+# def totalChance(count):
+#     if count == 0: 
+#         return 0
+#     else :
+#         return count - 1 + totalChance(count - 1)
