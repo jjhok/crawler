@@ -4,9 +4,9 @@ import time
 
 ########### TEST CASE ##############
 ## 랜덤 발생
-def IntRandom(minRange, maxRange):
+def intRandom(minRange, maxRange):
     result = random.randint(minRange, maxRange+1)
-    print("테스트 값 : {}".format(case1))
+    print("테스트 값 : {}".format(result))
     return result
 
 # # ### 리스트 (순차적)
@@ -17,7 +17,7 @@ def listSequence(minRange, maxRange):
 
 
 # ### 랜덤 리스트 / 랜덤 개
-def ListRandom(count, minRange, maxRange):
+def listRandom(count, minRange, maxRange):
     result = list()
     for i in range(0, count):
         result.append(random.randint(minRange, maxRange+1))
@@ -33,30 +33,43 @@ def listShuffle(list):
 
 
 #################   메인 함수  ####################
-def solution(A):
-    avgs = []
-    idxs = []
 
-    idx = 0
-    avg = sum(A[0:1])/len(A[0:1])
-    for startIdx in range(0, len(A)-1):
-        for endIdx in range(startIdx+1, len(A)):
-            if A[endIdx] >= avg or sum(A[startIdx:endIdx+1])/len(A[startIdx:endIdx+1]) >= avg:
-                continue
-            avg = sum(A[startIdx:endIdx+1])/len(A[startIdx:endIdx+1])
-            idx = startIdx
-            # avgs.append(sum(A[startIdx:endIdx+1])/len(A[startIdx:endIdx+1]))
-            # idxs.append(startIdx)
-    
-    # return idxs[avgs.index(min(avgs))]
-    return idx
+
+def solution(A):
+    # A.reverse()
+    stk = []
+    blockCount = 0
+
+    while A:
+        target = A.pop()
+        try:
+            if last > target:
+                blockCount += len(set(stk))
+                stk = []
+                stk.append(target)
+                last = target
+            else :
+                stk.append(target)
+        except:
+            last = target
+            stk.append(target)
+
+    blockCount += len(set(stk))
+    return blockCount
+
+
 
 
 #################################################
 
 
 ### TEST CASE
-A = [1000, -1000]
+# count = intRandom(0,10000)
+# A = listRandom(count, -100000000, 100000000)
+
+
+A = [8,8,5,7,9,8,7,4,8]
+B = [0,1,0,1,0]
 
 # [최대, 최소], worstcase 테스트 할 것.
 

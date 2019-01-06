@@ -168,3 +168,100 @@
 #         return 0
 #     else :
 #         return count - 1 + totalChance(count - 1)
+
+
+# # 7-1
+# def solution(A):
+#     if len(A) == 0:
+#         return 1
+
+#     stk = list(A)
+#     tmp = ['']
+    
+#     while stk:
+#         target = stk.pop()
+
+#         pair = getPair(tmp[-1])
+#         if target == pair:
+#             tmp.pop()
+#         else:
+#             tmp.append(target)
+
+#     if tmp == [''] :
+#         return 1
+#     else:
+#         return 0
+
+# def getPair(C):
+#     if C == "]":
+#         return "["
+#     if C == "}":
+#         return "{"
+#     if C == ")":
+#         return "("
+
+
+# # 7-2
+# def solution(A, B):
+#     downfishes = []
+#     remain = 0
+
+#     for index in range(0, len(A)):
+#         if B[index] == 0:
+#             while len(downfishes) > 0 and  downfishes[-1] < A[index]:
+#                     downfishes.pop()
+
+#             if len(downfishes) == 0:
+#                 remain += 1
+                
+#         else :
+#             downfishes.append(A[index])
+    
+#     return remain + len(downfishes)
+
+
+# # 8-1 : 55%
+# def solution(A):
+#     result = 0
+#     for splitIndex in range(1, len(A)):
+#         left = A[:splitIndex]
+#         right = A[splitIndex: len(A)]
+
+#         leftLeader = getLeader(left)
+#         if leftLeader == -1:
+#             continue
+
+#         rightLeader = getLeader(right)
+#         if rightLeader == -1:
+#             continue
+
+#         if leftLeader == rightLeader :
+#             result += 1
+
+#     return result
+
+
+# def getLeader(array):
+#     countDict = {}
+#     for value in array:
+#         try:
+#             countDict[value] += 1
+#         except:
+#             countDict[value] = 1
+        
+#         if countDict[value] > len(array)/2 :
+#             return value
+#     return -1
+
+
+# # 8-2
+# def solution(A):
+#     countDict = {}
+#     for index, value in enumerate(A):
+#         try:
+#             countDict[value] += 1
+#         except:
+#             countDict[value] = 1
+#         if countDict[value] > len(A)/2 :
+#             return index
+#     return -1
