@@ -147,11 +147,11 @@ def main():
 
     ### SELENIUM Login pdwiki Test
     loginUrl = "http://pdwiki.skplanet.com/login.action"
-    # driver = selLogin(loginUrl, '//*[@id="os_username"]', '1001078', '//*[@id="os_password"]', 'jjhok6757!', '//*[@id="loginButton"]')
+    # driver = selLogin(loginUrl, '//*[@id="os_username"]', '********', '//*[@id="os_password"]', '********', '//*[@id="loginButton"]')
 
     drivers = []
     for count in range(0, processCount):
-        drivers.append(selLogin(loginUrl, '//*[@id="os_username"]', '1001078', '//*[@id="os_password"]', 'jjhok6757!', '//*[@id="loginButton"]'))
+        drivers.append(selLogin(loginUrl, '//*[@id="os_username"]', '********', '//*[@id="os_password"]', '********', '//*[@id="loginButton"]'))
 
     keys = ["PDMS","INFRA2","INFRA","11oamerge",]
     # keys = ["PDMS","INFRA2","INFRA","11oamerge","DAS1","CTO","DA2D","ISMS","CLEAT","NBP","CTPFTGTDEV","ODR","PAD","proximitybi","OCBC","IntranetAPI","BenepiaSeoul2016","MS","Ticket","ABTEST","PDP","IMPAY","STDDEV","QA","code","PRMS2","QRDP","GCPB","GCP","SMF","SMC","PCW","LOG","pcrawler","BLIB","BGAll","intranetbo","DSH","intranetmng","PLABGUIDE","BIDATA","11LOG2DP","MLPF","ANLG","DEBI","PLANDAS","11stcorp","XL","11STDIC","hannahbi","SEARCHBI","DooraeImageSearch","GatheringImages",]
