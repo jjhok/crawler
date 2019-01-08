@@ -1,38 +1,23 @@
-import random
-import time
+1번
+
+def solution(A):
+    decimal = int(A, 2)
+    count = 0
+
+    while decimal != 0:
+        if decimal % 2 == 0:
+            decimal = decimal / 2
+        else :
+            decimal -= 1
+        count += 1
+
+    return count
 
 
-########### TEST CASE ##############
-## 랜덤 발생
-def intRandom(minRange, maxRange):
-    result = random.randint(minRange, maxRange+1)
-    print("테스트 값 : {}".format(result))
-    return result
-
-# # ### 리스트 (순차적)
-def listSequence(minRange, maxRange):
-    result = list(range(minRange, maxRange+1))
-    return result
-    print("테스트 값 : {}".format(result))
 
 
-# ### 랜덤 리스트 / 랜덤 개
-def listRandom(count, minRange, maxRange):
-    result = list()
-    for i in range(0, count):
-        result.append(random.randint(minRange, maxRange+1))
-    print("테스트 값 : {}개".format(count))
-    # print("테스트 값 : {}\n{}개".format(case3, count))
-    return result
 
-# shuffle
-def listShuffle(list):
-    return random.shuffle(list) 
-
-#####################################
-
-
-#################   메인 함수  ####################
+2번
 def solution(A):
     listData = A.split("\n")
     dicts = []
@@ -41,12 +26,14 @@ def solution(A):
         splitted = string.split(",")
         
         position = index
+        name = splitted[0].split(".")[0]
         extension = splitted[0].split(".")[-1].strip()
         city = splitted[1].strip()
         date = splitted[2].strip()
 
         dict = {
             'position': position,
+            'name': name,
             'extension': extension,
             'city': city,
             'date': date,
@@ -92,34 +79,28 @@ def generateName(indexedDicList):
     return newDicts
 
 
- 
+3번
+def solution(A, B, M, X, Y):
+    moveCount = 0
 
-#################################################
+    totalWeight = 0
+    people = 0
+    targetFloors = set()
+    
+    while A:
+        if totalWeight + A[0] <= Y and people + 1 <= X:
+            totalWeight += A.pop(0)
+            targetFloors.add(B.pop(0))
+            people += 1
+
+        else : 
+            moveCount += len(targetFloors) + 1
+            totalWeight = 0
+            people = 0
+            targetFloors = set()
+    
+    moveCount += len(targetFloors) + 1
+    return moveCount
 
 
-### TEST CASE
-# count = intRandom(0, 10000)
-# A = listRandom(count, 0, 2147483647)
-
-
-A = "000011110100001001000000"
-B = [3,3,2,2,3]
-M = 1
-X = 90
-Y = 200
-
-
-# [최대, 최소], worstcase 테스트 할 것.
-
-
-### 타임 측정
-import time
-
-begin = time.time()
-
-print("--------------------------------")
-print(solution(A))
-print("--------------------------------")
-
-end = time.time()
-print("TIME Elapsed : {}".format(end-begin))
+4번
