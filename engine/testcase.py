@@ -34,65 +34,24 @@ def listShuffle(list):
 
 #################   메인 함수  ####################
 def solution(A):
-    listData = A.split("\n")
-    dicts = []
-    ## to dictioary object
-    for index, string in enumerate(listData):
-        splitted = string.split(",")
-        
-        position = index
-        extension = splitted[0].split(".")[-1].strip()
-        city = splitted[1].strip()
-        date = splitted[2].strip()
+    if len(A) % 2 == 1: 
+        return 0
 
-        dict = {
-            'position': position,
-            'extension': extension,
-            'city': city,
-            'date': date,
-        }
-        
-        dicts.append(dict)
+    strList = list(A)
+    # pairs = ["{", "}", "[", "]", "(", ")"]
+    opener = ["{", "[", "("]
+    closer = ["}", "]", ")"]
+    stack = []
 
-    ## city 별로 split
-    cities = {}
-
-    for dict in dicts:
-        try:
-            cities[dict['city']].append(dict)
-        except:
-            cities[dict['city']] = [dict]
-    
-    names = []
-    for city in cities.values():
-        orderedCity = ordering(city)
-        names += generateName(orderedCity)
-
-    originalPositionDicts = sorted(names, key=lambda k: k['position'])
-    
-    return '\n'.join([dic['newName'] for dic in originalPositionDicts])
-
-# add index 
-def ordering(dicList):
-    sortedList = sorted(dicList, key=lambda k: k['date']) 
-    for index, dic in enumerate(sortedList):
-        dic['index'] = index + 1
-    return dicList
-
-#add newName
-def generateName(indexedDicList):
-    newDicts = indexedDicList
-    for dic in newDicts:
-        if len(newDicts) < 10:
-            dic['newName'] = "{}{}.{}".format(dic['city'], dic['index'], dic['extension'])
-        elif 10 <= len(newDicts) < 100:
-            dic['newName'] = "{0}{1:02d}.{2}".format(dic['city'], dic['index'], dic['extension'])
-        else :
-            dic['newName'] = "{0}{1:03d}.{2}".format(dic['city'], dic['index'], dic['extension'])
-    return newDicts
+    while len(strList) > 0:
+        char = strList.pop(0)
+        if char in opener:
+            stack.append(char)
+        else : 
+            stack.pop()
+    return 1
 
 
- 
 
 #################################################
 
@@ -102,12 +61,9 @@ def generateName(indexedDicList):
 # A = listRandom(count, 0, 2147483647)
 
 
-A = "000011110100001001000000"
-B = [3,3,2,2,3]
-M = 1
-X = 90
-Y = 200
-
+A = "({{({}[]{})}}[]{})"
+B = 10
+K = 1
 
 # [최대, 최소], worstcase 테스트 할 것.
 
