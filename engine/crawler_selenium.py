@@ -92,7 +92,32 @@ def selNestedPage(url, selector, startAt=0, limit=-1, driver=None, waitingForXpa
     links = result[selectorDictList[0].get('index', 'unknown')]    
     return _getFullPath(url, links)
 
+def selAction(driver, xpathForClick, xpathForSendkeys=None, sendkeys=None, frameName=None, switchNewWindow=False):
+    if frameName:
+        driver.switch_to.frame(driver.find_element_by_name(frameName))
 
+    try:
+        state = EC.presence_of_element_located((By.XPATH, xpathForClick))
+        WebDriverWait(driver, 3).until(state)
+        print("Document is ready")
+    except TimeoutException:
+        print("Time out")
+        driver.close()
+
+    if sendkeys is not None:
+        driver.find_element_by_xpath(xpathForSendkeys).clear()
+        driver.find_element_by_xpath(xpathForSendkeys).send_keys(sendkeys)
+    
+    driver.find_element_by_xpath(xpathForClick).click()
+    
+    if switchNewWindow == True:
+        WebDriverWait(driver, 10).until(lambda d: len(d.window_handles) == 2)
+        driver.switch_to_window(driver.window_handles[1])
+
+        # # wait to make sure the new window is loaded
+        # WebDriverWait(driver, 10).until(lambda d: d.title != "")
+
+    return driver
 
 # selectorDictList Sample
 """
@@ -122,10 +147,11 @@ def selSinglePage(url, selectorDictList, driver=None, waitingForXpath=None, dela
     #     driver = webdriver.Remote(command_executor=session_url,desired_capabilities={})
     #     driver.session_id = session_id  
 
-    try:
-        driver.get(url)
-    except Exception as ex:
-        print(ex)
+    if url:
+        try:
+            driver.get(url)
+        except Exception as ex:
+            print(ex)
 
     if waitingForXpath:
         try:
@@ -143,42 +169,46 @@ def selSinglePage(url, selectorDictList, driver=None, waitingForXpath=None, dela
     
  
 def main():
-    processCount = 2
+    processCount = 1
 
     ### SELENIUM Login pdwiki Test
-    loginUrl = "http://pdwiki.skplanet.com/login.action"
+    loginUrl = "http://pnetsso.skplanet.com/login.asp"
     # driver = selLogin(loginUrl, '//*[@id="os_username"]', '********', '//*[@id="os_password"]', '********', '//*[@id="loginButton"]')
 
     drivers = []
     for count in range(0, processCount):
-        drivers.append(selLogin(loginUrl, '//*[@id="os_username"]', '********', '//*[@id="os_password"]', '********', '//*[@id="loginButton"]'))
+        drivers.append(selLogin(loginUrl, '//*[@id="txtUSER"]', '*******', '//*[@id="txtPASSWORD"]', '*******', '//*[@id="divPop"]/table/tbody/tr[6]/td/img[1]'))
+    
+    for driver in drivers:
+        driver = selAction(driver, '//*[@id="lay_header"]/div/div/div[4]/a', switchNewWindow=True, frameName="fm_gnb")
 
-    keys = ["PDMS","INFRA2","INFRA","11oamerge",]
-    # keys = ["PDMS","INFRA2","INFRA","11oamerge","DAS1","CTO","DA2D","ISMS","CLEAT","NBP","CTPFTGTDEV","ODR","PAD","proximitybi","OCBC","IntranetAPI","BenepiaSeoul2016","MS","Ticket","ABTEST","PDP","IMPAY","STDDEV","QA","code","PRMS2","QRDP","GCPB","GCP","SMF","SMC","PCW","LOG","pcrawler","BLIB","BGAll","intranetbo","DSH","intranetmng","PLABGUIDE","BIDATA","11LOG2DP","MLPF","ANLG","DEBI","PLANDAS","11stcorp","XL","11STDIC","hannahbi","SEARCHBI","DooraeImageSearch","GatheringImages",]
-    detailurls = urlParse("http://pdwiki.skplanet.com/spaces/spacepermissions.action?key={key}", "{key}", keys)
 
+    keys = ["amsong","psc","PP43911","PP40441","PP81961","PP48224","PP08821","1002587","PP48955","1002237","1000897","1001219","1002405","1001479","1003849","1003744","1001291","1001969","1002006","1000022","1002396","1003742","1002353","PP37852","1003870","PP78271","PP80091","1000641","1000108","1002878","1003887","1002966","PP81233","1001085","1004003","1001001","1002475","1003681","1000019","1000392","1002483","1001504","1002757","1002350","1002539","1003055","1000714","1003899","PP53292","PP71046","PP57384","PP60198","PP55156","PP53853","PP25221","PP02887","PP53615","PP02301","PP48842","9001001","PP77005","PP58071","PP77451","9001033","PP78223","1002383","1002982","1002354","1001920","1000273","1003291","1001946","1002218","1003436","1001078","1000504","1002181","1002318","1002516","1003642","1001210","1001740","1001416","1000301","1003475","1000851","1002723","PP55902","1001185","1002305","1000206"]
+    
     selectorDictList = [
         {
             'index': '어드민',
-            'selector': '#aPermissionsTable > tbody > tr.space-permission-row > td:nth-child(2) > img',
-            'filterAttr': 'src',
-            'filterValue': '/s/en_GB/7109/fbbcac5a2a6382e2f6a78d491af75161a7840bc8/_/images/icons/emoticons/check.png',
-            'attr': 'srcd'  ## . 갯수는 parent
+            'selector': '#gvList_ctl02_btnName',
+            # 'filterAttr': 'src',
+            # 'filterValue': '/s/en_GB/7109/fbbcac5a2a6382e2f6a78d491af75161a7840bc8/_/images/icons/emoticons/check.png',
+            # 'attr': 'srcd'  ## . 갯수는 parent
             # 'attr': '.data-permission-user'  ## . 갯수는 parent
         },
-        {
-            'index': '스페이스명',
-            'selector': '#rw_space_nav > div.rw_item_content.rw_has_favourite > a',
-            'attr': 'title'  ## . 갯수는 parent
-        },
     ]
-    waitingForXpath = '//*[@id="uPermissionsTable"]/tbody/tr/td'
+    # waitingForXpath = '//*[@id="uPermissionsTable"]/tbody/tr/td'
 
     rets = []
 
+    for key in keys:
+        driver = selAction(drivers[0], xpathForClick='//*[@id="ucSearchBox_btnSearch2"]', xpathForSendkeys='//*[@id="ucSearchBox_txtSearchText"]', sendkeys=key)
+        time.sleep(0.5)
+        rets.append(selSinglePage(None, selectorDictList, driver=driver))
+
     # 한개로 돌릴때
-    for url in detailurls:
-        rets.append(selSinglePage(url, selectorDictList, driver=driver))
+    # for url in detailurls:
+    #     rets.append(selSinglePage(url, selectorDictList, driver=driver))
+
+    driver.quit()
 
     return rets
 
@@ -191,7 +221,7 @@ if __name__ == "__main__":
     result = main()
     df = pd.DataFrame(result)
     print(df)
-    # toFile(df, 'wiki.csv')
+    toFile(df, 'pdwiki_admin_list.csv')
 
     end = time.time()
     print("Eslapsed Time : {}".format(end - begin))
