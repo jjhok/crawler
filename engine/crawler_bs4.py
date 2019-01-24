@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 import asyncio
 from bs4 import BeautifulSoup
-from html_parser import *
+from .html_parser import *
 
 ## LOGGING setup
 myLogger = logging.getLogger("my")
@@ -26,9 +26,9 @@ myLogger.addHandler(file_handler)
         'nameAttr_of_inputTag': 'value',
     },
 """
-def bs4Login(loginActionUrl, loginData):
+def bs4Login(loginActionUrl, inputDict):
     session = requests.Session()
-    req = session.post(loginActionUrl, data=loginData)
+    req = session.post(loginActionUrl, data=inputDict)
     if req.status_code == 200:
         return session
     else :

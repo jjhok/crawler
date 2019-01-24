@@ -10,7 +10,7 @@ from selenium.common.exceptions import TimeoutException
 import logging
 import pandas as pd
 from multiprocessing import Pool
-from html_parser import *
+from .html_parser import *
 
 ## LOGGING setup
 myLogger = logging.getLogger("my")
@@ -32,19 +32,22 @@ CHROME_DRIVER = '/Users/1001078/Documents/workspace/Python/crawler/engine/chrome
 # LoginData Sample
 """
     {
-        'nameAttr_of_inputTag': 'value',
-        'nameAttr_of_inputTag': 'value',
+        'idXpath': 'xpath',
+        'id': 'value',
+        'pwdXpath': 'xpath',
+        'pwd': 'value',
+        'submitXpath': 'xpath'
     },
 """
-def selLogin(loginUrl, idXpath, id, pwdXpath, pwd, submitXpath):
+def selLogin(loginUrl, inputDict):
 
     driver = webdriver.Chrome(CHROME_DRIVER)
     driver.implicitly_wait(3)
 
     driver.get(loginUrl)
-    driver.find_element_by_xpath(idXpath).send_keys(id)
-    driver.find_element_by_xpath(pwdXpath).send_keys(pwd)
-    driver.find_element_by_xpath(submitXpath).click()
+    driver.find_element_by_xpath(inputDict.get('idXpath').send_keys(inputDict.get('id')))
+    driver.find_element_by_xpath(inputDict.get('pwdXpath').send_keys(inputDict.get('pwd')))
+    driver.find_element_by_xpath(inputDict.get('submitXpath').click())
 
     return driver
 

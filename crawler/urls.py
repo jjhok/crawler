@@ -22,5 +22,6 @@ urlpatterns = [
     path('api/', views.test, name='test'),
     path('api/test', views.test, name='test'),
     path('api/test/login', views.testLogin, name='testLogin'),
+    path('api/template/login', views.templateLogin, name='templateLogin'),
     
 ]
