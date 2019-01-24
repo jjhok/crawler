@@ -8,6 +8,7 @@ def test(request):
     return JsonResponse(sample, safe=True)
 
 def testLogin(request):
+    data = json.loads(request.body)
     method = data.get('method')
     url = data.get('url')
     id = data.get('id')
