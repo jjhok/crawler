@@ -17,33 +17,38 @@ def templateLogin(request):
     print(request.GET)
     if method == 'bs4':
         template = '''
-        {
-            "nameAttr_of_inputTag": "value",
-            "nameAttr_of_inputTag": "value",
-        }
-        '''
+{
+    'nameAttr_of_inputTag1': 'value',
+    'nameAttr_of_inputTag2': 'value',
+    'validate selctor': 'selector',
+},
+'''
     else :
         template = """
-        {
-            'idXpath': 'xpath',
-            'id': 'value',
-            'pwdXpath': 'xpath',
-            'pwd': 'value',
-            'submitXpath': 'xpath'
-        }
+{
+    'idXpath': 'xpath',
+    'id': 'value',
+    'pwdXpath': 'xpath',
+    'pwd': 'value',
+    'submitXpath': 'xpath'
+}
         """
 
     return JsonResponse(template, safe=False)
 
 def testLogin(request):
     data = json.loads(request.body)
+    login = data.get('login')
     method = data.get('method')
     url = data.get('url')
     inputDict = data.get('inputDict')
-    print(inputDict)
+
     if method == 'bs4' : 
-        bs4Login(url, inputDict)
+        if login == True:
+            result = bs4Login(url, inputDict, test=True)
+        else: 
+            result = bs4Connect(url)
     else :
         selLogin(url, inputDict)
         
-    return JsonResponse(data, safe=True)
+    return JsonResponse(result)

@@ -4,6 +4,7 @@ import logging
 import pandas as pd
 import asyncio
 from bs4 import BeautifulSoup
+import json
 from .html_parser import *
 
 ## LOGGING setup
@@ -18,21 +19,52 @@ file_handler.setFormatter(formatter)
 myLogger.addHandler(file_handler)
 
 
+def bs4Connect(url, test=True):
+    session = requests.Session()
+    try : 
+        res = session.get(url)
+        if test == True:
+            return {"STATUS_CODE": res.status_code, "response": res.text}
+    except Exception as ex:
+        if test == True:
+            return {"ERROR": "{}".format(ex)}
+        else :
+            return None
+
 
 # LoginData Sample
 """
     {
         'nameAttr_of_inputTag': 'value',
         'nameAttr_of_inputTag': 'value',
+        'validate_selctor': 'selector',
     },
 """
-def bs4Login(loginActionUrl, inputDict):
+def bs4Login(loginActionUrl, inputDict, test=False):
     session = requests.Session()
-    req = session.post(loginActionUrl, data=inputDict)
-    if req.status_code == 200:
-        return session
-    else :
-        raise Exception("로그인 실패")
+    try: 
+        res = session.post(loginActionUrl, data=inputDict)
+    except Exception as ex:
+        if test == True:
+            return {"ERROR": "{}".format(ex)}
+        else :
+            return None
+
+    if test == True:
+        if res.status_code == 200:
+            selectorDictList = {        
+                'selector' : inputDict.get('validate_selector', ''),
+            },
+
+            result = parseHtml(res.text, selectorDictList)
+            return {"STATUS_CODE": res.status_code, "response": json.dumps(result, ensure_ascii=False)}   ### ensure_ascii 한글깨짐
+        else :
+            return {"STATUS_CODE": res.status_code, "response": "ERROR"}
+    else:
+        if res.status_code == 200:
+            return session
+        else :
+            raise Exception("로그인 실패")
 
 async def bs4GetNestedPage(url, selector, startAt = 0, limit = -1, loginSession=None):
     selectorDictList = [
@@ -110,6 +142,7 @@ if __name__ == "__main__":
     #     'os_username': '100XXXX',  # input Tag > name attribute
     #     'os_password' : "********",
     #     'os_destination' : "/index.action",
+    #     'validate_selector': 'selector...'
     # }
 
     # loginActionUrl = "http://wiki.skplanet.com/dologin.action"

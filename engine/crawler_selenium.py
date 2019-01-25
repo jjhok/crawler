@@ -39,7 +39,7 @@ CHROME_DRIVER = '/Users/1001078/Documents/workspace/Python/crawler/engine/chrome
         'submitXpath': 'xpath'
     },
 """
-def selLogin(loginUrl, inputDict):
+def selLogin(loginUrl, inputDict, test=False):
 
     driver = webdriver.Chrome(CHROME_DRIVER)
     driver.implicitly_wait(3)
