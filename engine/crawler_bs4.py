@@ -54,8 +54,7 @@ def bs4Login(loginActionUrl, inputDict, test=False):
         if res.status_code == 200:
             selectorDictList = [{        
                 'selector' : inputDict.get('validate_selector', ''),
-            }],
-
+            }]
             result = parseHtml(res.text, selectorDictList)
             return {"STATUS_CODE": res.status_code, "response": json.dumps(result, ensure_ascii=False)}   ### ensure_ascii 한글깨짐
         else :

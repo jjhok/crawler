@@ -46,10 +46,14 @@ def selLogin(loginUrl, inputDict, test=False):
     driver = webdriver.Chrome(CHROME_DRIVER)
     driver.implicitly_wait(3)
 
-    driver.get(loginUrl)
-    driver.find_element_by_xpath(inputDict.get('idXpath')).send_keys(inputDict.get('id'))
-    driver.find_element_by_xpath(inputDict.get('pwdXpath')).send_keys(inputDict.get('pwd'))
-    driver.find_element_by_xpath(inputDict.get('submitXpath')).click()
+    try : 
+        driver.get(loginUrl)
+        driver.find_element_by_xpath(inputDict.get('idXpath')).send_keys(inputDict.get('id'))
+        driver.find_element_by_xpath(inputDict.get('pwdXpath')).send_keys(inputDict.get('pwd'))
+        driver.find_element_by_xpath(inputDict.get('submitXpath')).click()
+    except:
+        driver.quit()
+        return None
 
     if test == True:
         html = driver.page_source
@@ -58,6 +62,7 @@ def selLogin(loginUrl, inputDict, test=False):
             'selector' : inputDict.get('validate_selector', ''),
         }]
         result = parseHtml(html, selectorDictList)
+        driver.quit()
         return {"STATUS": "OK", "response": json.dumps(result, ensure_ascii=False)}   ### ensure_ascii 한글깨짐
 
     return driver
