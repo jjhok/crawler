@@ -9,6 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 import logging
 import pandas as pd
+import json
 from multiprocessing import Pool
 from .html_parser import *
 
@@ -36,7 +37,8 @@ CHROME_DRIVER = '/Users/1001078/Documents/workspace/Python/crawler/engine/chrome
         'id': 'value',
         'pwdXpath': 'xpath',
         'pwd': 'value',
-        'submitXpath': 'xpath'
+        'submitXpath': 'xpath',
+        'validate_selector': 'selector'
     },
 """
 def selLogin(loginUrl, inputDict, test=False):
@@ -45,9 +47,18 @@ def selLogin(loginUrl, inputDict, test=False):
     driver.implicitly_wait(3)
 
     driver.get(loginUrl)
-    driver.find_element_by_xpath(inputDict.get('idXpath').send_keys(inputDict.get('id')))
-    driver.find_element_by_xpath(inputDict.get('pwdXpath').send_keys(inputDict.get('pwd')))
-    driver.find_element_by_xpath(inputDict.get('submitXpath').click())
+    driver.find_element_by_xpath(inputDict.get('idXpath')).send_keys(inputDict.get('id'))
+    driver.find_element_by_xpath(inputDict.get('pwdXpath')).send_keys(inputDict.get('pwd'))
+    driver.find_element_by_xpath(inputDict.get('submitXpath')).click()
+
+    if test == True:
+        html = driver.page_source
+
+        selectorDictList = [{
+            'selector' : inputDict.get('validate_selector', ''),
+        }]
+        result = parseHtml(html, selectorDictList)
+        return {"STATUS": "OK", "response": json.dumps(result, ensure_ascii=False)}   ### ensure_ascii 한글깨짐
 
     return driver
 

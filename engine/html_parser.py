@@ -47,7 +47,6 @@ def getFullPath(url, links):
 def parseHtml(html, selectorDictList):
     soup = BeautifulSoup(html, 'html.parser')
 
-            
     results = {}
     defaultIndex = 0
 

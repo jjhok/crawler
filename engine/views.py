@@ -18,19 +18,20 @@ def templateLogin(request):
     if method == 'bs4':
         template = '''
 {
-    'nameAttr_of_inputTag1': 'value',
-    'nameAttr_of_inputTag2': 'value',
-    'validate selctor': 'selector',
+    "nameAttr_of_inputTag1": "value",
+    "nameAttr_of_inputTag2": "value",
+    "validate selctor": "selector",
 },
 '''
     else :
         template = """
 {
-    'idXpath': 'xpath',
-    'id': 'value',
-    'pwdXpath': 'xpath',
-    'pwd': 'value',
-    'submitXpath': 'xpath'
+    "idXpath": "xpath",
+    "id": "value",
+    "pwdXpath": "xpath",
+    "pwd": "value",
+    "submitXpath": "xpath",
+    "validate_selector": "selector"
 }
         """
 
@@ -49,6 +50,6 @@ def testLogin(request):
         else: 
             result = bs4Connect(url)
     else :
-        selLogin(url, inputDict)
+        result = selLogin(url, inputDict, test=True)
         
     return JsonResponse(result)
