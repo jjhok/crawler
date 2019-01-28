@@ -65,7 +65,7 @@ def bs4Login(loginActionUrl, inputDict, test=False):
         else :
             raise Exception("로그인 실패")
 
-async def bs4GetNestedPage(url, selector, startAt = 0, limit = -1, loginSession=None):
+async def bs4GetNestedPage(loop, sem, url, selector, startAt = 0, limit = -1, loginSession=None):
     selectorDictList = [
         {
             'selector' : selector,
@@ -75,13 +75,13 @@ async def bs4GetNestedPage(url, selector, startAt = 0, limit = -1, loginSession=
             'limit': limit
         },
     ]
-    future = bs4SinglePage(url, selectorDictList, loginSession=loginSession)
+    future = bs4SinglePage(loop, sem, url, selectorDictList, loginSession=loginSession)
     rawData = await asyncio.gather(future)
     
     result = rawData[0]
-
+    
     # fullpath generation
-    links = result[selectorDictList[0].get('index', 'unknown')]    
+    links = result[selectorDictList[0].get('index', 0)]    
     return getFullPath(url, links)
 
 
@@ -97,7 +97,7 @@ async def bs4GetNestedPage(url, selector, startAt = 0, limit = -1, loginSession=
         'filterValue' : 'value',
     },
 """
-async def bs4SinglePage(url, selectorDictList, nameSelector=None, nameAttr='text', loginSession=None, driverForCookie=None):
+async def bs4SinglePage(loop, sem, url, selectorDictList, nameSelector=None, nameAttr='text', loginSession=None, driverForCookie=None):
     await sem.acquire()
 
     if loginSession is not None :
@@ -118,7 +118,7 @@ async def bs4SinglePage(url, selectorDictList, nameSelector=None, nameAttr='text
 
     sem.release()
 
-    return parseHtml(html, selectorDictList, nameSelector=nameSelector, nameAttr=nameAttr)
+    return parseHtml(html, selectorDictList)
 
 
 
@@ -150,8 +150,6 @@ if __name__ == "__main__":
     # ## Detail Page list
     # detailLinks = loop.run_until_complete(bs4GetNestedPage("http://wiki.skplanet.com/admin/originaltheme/organizer.action", selector="#rw_uncategorized_container > div > div.rw_item_body > ul > li > span.rw_item_content > span.rw_actions > a", loginSession=loginSession))
     # print(detailLinks)
-    
-
 
     ### BS4 clien.net TEST 
     mainpages = urlParse("https://www.clien.net/service/group/allreview?&od=T31&po={pageId}", "{pageId}", range(0,2))
