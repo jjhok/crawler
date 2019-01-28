@@ -51,7 +51,6 @@ def parseHtml(html, selectorDictList):
     defaultIndex = 0
 
     for selectorDict in selectorDictList:
-        print(selectorDictList)
         index = selectorDict.get('index', defaultIndex)
         selector = selectorDict.get('selector', '').replace("child", "of-type")
         attr = selectorDict.get('attr', 'text')
