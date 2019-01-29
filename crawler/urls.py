@@ -22,9 +22,10 @@ urlpatterns = [
     path('api/', views.test, name='test'),
     path('api/test', views.test, name='test'),
     path('api/test/login', views.testLogin, name='testLogin'),
-    path('api/test/nestedPage', views.testNestedPage, name='testNestedPage'),
+    path('api/test/singlePage', views.testSinglePage, name='testSinglePage'),
     path('api/template/login', views.templateLogin, name='templateLogin'),
     path('api/template/detailPage', views.templateDetailPage, name='templateDetailPage'),
     path('api/utils/fullpath', views.utilsFullpath, name='utilsFullpath'),
+    path('api/crawler', views.crawler, name='crawler'),
     
 ]
