@@ -22,7 +22,7 @@ def templateLogin(request):
 {
     "nameAttr_of_inputTag1": "value",
     "nameAttr_of_inputTag2": "value",
-    "validate selctor": "selector",
+    "validate_selector": "selector",
 },
 '''
     else :

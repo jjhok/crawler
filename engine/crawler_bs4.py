@@ -56,7 +56,7 @@ def bs4Login(loginActionUrl, inputDict, test=False):
                 'selector' : inputDict.get('validate_selector', ''),
             }]
             result = parseHtml(res.text, selectorDictList)
-            return {"STATUS_CODE": res.status_code, "response": json.dumps(result, ensure_ascii=False)}   ### ensure_ascii 한글깨짐
+            return {"STATUS_CODE": res.status_code, "response": json.dumps(result, ensure_ascii=False), "raw": res.text}   ### ensure_ascii 한글깨짐
         else :
             return {"STATUS_CODE": res.status_code, "response": "ERROR"}
     else:
@@ -79,7 +79,7 @@ async def bs4GetNestedPage(loop, sem, url, selector, startAt = 0, limit = -1, lo
     rawData = await asyncio.gather(future)
     
     result = rawData[0]
-    
+
     # fullpath generation
     links = result[selectorDictList[0].get('index', 0)]    
     return getFullPath(url, links)
@@ -117,7 +117,6 @@ async def bs4SinglePage(loop, sem, url, selectorDictList, nameSelector=None, nam
     html = req.text
 
     sem.release()
-
     return parseHtml(html, selectorDictList)
 
 
